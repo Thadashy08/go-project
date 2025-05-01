@@ -19,8 +19,9 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p test-reports
+                    export PATH=$PATH:$HOME/go/bin
                     go install github.com/jstemmer/go-junit-report/v2@latest
-                    go test -v 2>&1 | go-junit-report -set-exit-code > test-reports/report.xml
+                    go test -v ./... | go-junit-report -set-exit-code > test-reports/report.xml
                 '''
             }
         }
