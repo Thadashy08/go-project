@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Thadashy08/go-project.git'
+            }
+        }
+
+        stage('Verify Go') {
+            steps {
+                sh 'which go'
+                sh 'go version'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                    mkdir -p test-reports
+                    go install github.com/jstemmer/go-junit-report/v2@latest
+                    go test -v 2>&1 | go-junit-report -set-exit-code > test-reports/report.xml
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            junit 'test-reports/report.xml'
+        }
+    }
+}
